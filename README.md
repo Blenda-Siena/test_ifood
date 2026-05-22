@@ -35,6 +35,8 @@ O objetivo do case e ingerir dados publicos de corridas de Yellow Taxi da cidade
 
 ## Estrutura do Repositorio
 
+> **Nota:** Os arquivos `.py` em `src/` e `analysis/` sao notebooks Python do Databricks exportados como arquivos-fonte, podendo ser importados novamente como notebooks no Databricks. Eles nao sao scripts Python convencionais.
+
 ```txt
 ifood-case/
 |- src/
@@ -79,13 +81,15 @@ TLC Parquet Files
 
 ## Storage e Catalogo
 
-O ambiente validado utilizou o catalogo `workspace`, schema `ifood_case` e volume `landing`.
+Landing zone (Unity Catalog Volume path):
 
 Landing zone:
 
 ```txt
 /Volumes/workspace/ifood_case/landing/yellow_taxi
-```
+Para leitura Spark, o caminho utilizado e:
+
+> **Nota:** O prefixo `dbfs:/` refere-se ao Databricks File System (DBFS), um sistema de arquivos virtual utilizado no Databricks para acessar dados armazenados em diferentes camadas de armazenamento. Ao utilizar caminhos iniciados por `dbfs:/`, voce garante compatibilidade com APIs Spark e notebooks Databricks.
 
 Para leitura Spark, o caminho utilizado e:
 
@@ -137,20 +141,20 @@ Alem delas, a Silver preserva metadados de governanca como `source_file`, `sourc
 
 ## Resultados de Qualidade
 
-Execucao validada:
-
-| Indicador | Valor |
-|---|---:|
-| Registros na Bronze | 16.186.386 |
+| Registros na Bronze | 16,186,386 |
+| Registros aprovados na Silver | 15,611,119 |
+| Registros rejeitados | 575,267 |
+| Taxa aprovada | 96.45% |
+| Taxa rejeitada | 3.55% |
 | Registros aprovados na Silver | 15.611.119 |
 | Registros rejeitados | 575.267 |
 | Taxa aprovada | 96,45% |
 | Taxa rejeitada | 3,55% |
 
-Principais anomalias encontradas:
-
-| Regra | Registros invalidos | Percentual |
-|---|---:|---:|
+| `passenger_count_null` | 428,665 | 2.65% |
+| `total_amount_negative` | 141,407 | 0.87% |
+| `dropoff_before_or_equal_pickup` | 6,181 | 0.038% |
+| `pickup_outside_expected_period` | 104 | 0.0006% |
 | `passenger_count_null` | 428.665 | 2,65% |
 | `total_amount_negative` | 141.407 | 0,87% |
 | `dropoff_before_or_equal_pickup` | 6.181 | 0,038% |
@@ -160,13 +164,13 @@ Observacao: um mesmo registro pode violar mais de uma regra, por isso a soma das
 
 ## Resultados Analiticos
 
-### Pergunta 1
-
-Media de `total_amount` por mes:
-
 | Mes | Total de corridas | Media `total_amount` |
 |---|---:|---:|
-| 2023-01 | 2.968.728 | 27,40 |
+| 2023-01 | 2,968,728 | 27.40 |
+| 2023-02 | 2,811,363 | 27.31 |
+| 2023-03 | 3,285,263 | 28.23 |
+| 2023-04 | 3,166,753 | 28.72 |
+| 2023-05 | 3,379,012 | 29.38 |
 | 2023-02 | 2.811.363 | 27,31 |
 | 2023-03 | 3.285.263 | 28,23 |
 | 2023-04 | 3.166.753 | 28,72 |
@@ -174,32 +178,32 @@ Media de `total_amount` por mes:
 
 A maior media mensal ocorreu em maio de 2023, com `avg_total_amount` de 29,38.
 
-### Pergunta 2
-
-Media de `passenger_count` por hora do dia em maio:
-
 | Hora | Total de corridas | Media passageiros |
 |---:|---:|---:|
-| 0 | 89.563 | 1,41 |
-| 1 | 58.148 | 1,42 |
-| 2 | 37.459 | 1,44 |
-| 3 | 24.335 | 1,44 |
-| 4 | 15.901 | 1,39 |
-| 5 | 18.458 | 1,27 |
-| 6 | 46.407 | 1,23 |
-| 7 | 93.854 | 1,25 |
-| 8 | 128.339 | 1,27 |
-| 9 | 143.942 | 1,28 |
-| 10 | 156.819 | 1,32 |
-| 11 | 170.800 | 1,33 |
-| 12 | 184.013 | 1,35 |
-| 13 | 188.413 | 1,36 |
-| 14 | 204.814 | 1,36 |
-| 15 | 209.120 | 1,37 |
-| 16 | 208.970 | 1,37 |
-| 17 | 228.062 | 1,37 |
-| 18 | 242.091 | 1,36 |
-| 19 | 217.169 | 1,37 |
+| 0 | 89,563 | 1.41 |
+| 1 | 58,148 | 1.42 |
+| 2 | 37,459 | 1.44 |
+| 3 | 24,335 | 1.44 |
+| 4 | 15,901 | 1.39 |
+| 5 | 18,458 | 1.27 |
+| 6 | 46,407 | 1.23 |
+| 7 | 93,854 | 1.25 |
+| 8 | 128,339 | 1.27 |
+| 9 | 143,942 | 1.28 |
+| 10 | 156,819 | 1.32 |
+| 11 | 170,800 | 1.33 |
+| 12 | 184,013 | 1.35 |
+| 13 | 188,413 | 1.36 |
+| 14 | 204,814 | 1.36 |
+| 15 | 209,120 | 1.37 |
+| 16 | 208,970 | 1.37 |
+| 17 | 228,062 | 1.37 |
+| 18 | 242,091 | 1.36 |
+| 19 | 217,169 | 1.37 |
+| 20 | 192,633 | 1.38 |
+| 21 | 196,571 | 1.40 |
+| 22 | 181,573 | 1.41 |
+| 23 | 141,558 | 1.41 |
 | 20 | 192.633 | 1,38 |
 | 21 | 196.571 | 1,40 |
 | 22 | 181.573 | 1,41 |
@@ -208,10 +212,10 @@ Media de `passenger_count` por hora do dia em maio:
 A maior media de passageiros por corrida ocorreu entre 2h e 3h, com media de 1,44 passageiros. A menor media ocorreu as 6h, com 1,23 passageiros.
 
 ## Como Executar
-
-Importe os notebooks no Databricks preservando a estrutura de pastas:
-
-```txt
+src/00_setup_and_config (Databricks notebook, e.g., `00_setup_and_config.py` or `.dbc`)
+src/01_ingestion_bronze (Databricks notebook, e.g., `01_ingestion_bronze.py` or `.dbc`)
+src/02_quality_and_cleansing_silver (Databricks notebook, e.g., `02_quality_and_cleansing_silver.py` or `.dbc`)
+analysis/03_business_gold_analysis (Databricks notebook, e.g., `03_business_gold_analysis.py` or `.dbc`)
 src/00_setup_and_config
 src/01_ingestion_bronze
 src/02_quality_and_cleansing_silver
@@ -221,7 +225,7 @@ analysis/03_business_gold_analysis
 Execute na seguinte ordem:
 
 1. `src/00_setup_and_config`
-2. `src/01_ingestion_bronze`
+Nos notebooks `01`, `02` e `03`, o comando `%run` (específico do Databricks) deve ficar isolado na primeira célula. **Atenção:** `%run` não é um comando Python padrão e só funciona em notebooks Databricks.
 3. `src/02_quality_and_cleansing_silver`
 4. `analysis/03_business_gold_analysis`
 
@@ -270,11 +274,10 @@ ORDER BY pickup_hour;
 ## Evolucao Para Producao
 
 Em um ambiente corporativo, a solucao pode evoluir com:
-
-- orquestracao via Databricks Workflows ou Airflow;
+- orquestração via Databricks Workflows ou Airflow;
 - CI/CD com GitHub Actions, GitLab CI ou Azure DevOps;
-- Unity Catalog com permissoes por grupo, lineage e auditoria;
+- Unity Catalog com permissões por grupo, lineage e auditoria;
 - expectativas de qualidade com Delta Live Tables ou Great Expectations;
-- alertas para falha de ingestao, queda de volumetria e alta taxa de rejeicao;
+- alertas para falha de ingestão, queda de volumetria e alta taxa de rejeição;
 - dashboards em Databricks SQL, Power BI, Tableau ou Looker;
-- ambientes separados de desenvolvimento, homologacao e producao.
+- ambientes separados de desenvolvimento, homologação e produção.
