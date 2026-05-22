@@ -1,9 +1,10 @@
 # Databricks notebook source
-# MAGIC %run ./00_setup_and_config
+# MAGIC %run "./00_setup_and_config"
+
+# COMMAND ----------
 
 from uuid import uuid4
 from datetime import datetime
-
 from pyspark.sql import functions as F
 from pyspark.sql.types import StructType, StructField, StringType, LongType, DoubleType, TimestampType
 

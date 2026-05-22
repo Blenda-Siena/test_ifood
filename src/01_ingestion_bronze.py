@@ -1,5 +1,7 @@
 # Databricks notebook source
-# MAGIC %run ./00_setup_and_config
+# MAGIC %run "./00_setup_and_config"
+
+# COMMAND ----------
 
 import os
 import hashlib

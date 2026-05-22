@@ -27,3 +27,9 @@ GOLD_AVG_PASSENGERS_HOUR_MAY_TABLE = f"{SCHEMA}.gold_avg_passenger_count_by_hour
 def ensure_environment():
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {SCHEMA}")
     dbutils.fs.mkdirs(LANDING_PATH)
+
+ensure_environment()
+
+print("Setup concluído com sucesso.")
+print(f"Schema: {SCHEMA}")
+print(f"Landing path: {LANDING_PATH}")
