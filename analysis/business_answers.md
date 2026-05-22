@@ -13,7 +13,7 @@ SQL de exemplo:
 SELECT
   month(tpep_pickup_datetime) AS pickup_month,
   ROUND(AVG(total_amount), 2) AS avg_total_amount
-FROM FROM ifood_case.silver_yellow_taxi
+FROM ifood_case.silver_yellow_taxi
 GROUP BY 1
 ORDER BY 1;
 ```
@@ -31,7 +31,7 @@ SQL de exemplo:
 SELECT
   hour(tpep_pickup_datetime) AS pickup_hour,
   ROUND(AVG(passenger_count), 2) AS avg_passenger_count
-FROM FROM ifood_case.silver_yellow_taxi
+FROM ifood_case.silver_yellow_taxi
 WHERE month(tpep_pickup_datetime) = 5
 GROUP BY 1
 ORDER BY 1;
