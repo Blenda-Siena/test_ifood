@@ -1,11 +1,9 @@
 # Databricks notebook source
 
 SCHEMA = "ifood_case"
-BASE_DBFS_PATH = "dbfs:/FileStore/ifood_case_taxi"
-LOCAL_BASE_PATH = "/dbfs/FileStore/ifood_case_taxi"
+VOLUME = "landing"
 
-LANDING_PATH = f"{BASE_DBFS_PATH}/landing/yellow_taxi"
-LANDING_LOCAL_PATH = f"{LOCAL_BASE_PATH}/landing/yellow_taxi"
+CATALOG = spark.catalog.currentCatalog()
 
 TLC_URL_TEMPLATE = (
     "https://d37ci6vzurychx.cloudfront.net/trip-data/"
@@ -14,22 +12,40 @@ TLC_URL_TEMPLATE = (
 
 MONTHS = [1, 2, 3, 4, 5]
 
-BRONZE_TAXI_TABLE = f"{SCHEMA}.bronze_yellow_taxi"
-BRONZE_INVENTORY_TABLE = f"{SCHEMA}.bronze_file_inventory"
-SILVER_TAXI_TABLE = f"{SCHEMA}.silver_yellow_taxi"
-SILVER_REJECTED_TABLE = f"{SCHEMA}.silver_yellow_taxi_rejected"
-DQ_METRICS_TABLE = f"{SCHEMA}.dq_metrics"
+VOLUME_BASE_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}"
+LANDING_LOCAL_PATH = f"{VOLUME_BASE_PATH}/yellow_taxi"
+LANDING_SPARK_PATH = f"dbfs:{LANDING_LOCAL_PATH}"
 
-GOLD_AVG_AMOUNT_MONTH_TABLE = f"{SCHEMA}.gold_avg_total_amount_by_month"
-GOLD_AVG_PASSENGERS_HOUR_MAY_TABLE = f"{SCHEMA}.gold_avg_passenger_count_by_hour_may"
+BRONZE_TAXI_TABLE = f"{CATALOG}.{SCHEMA}.bronze_yellow_taxi"
+BRONZE_INVENTORY_TABLE = f"{CATALOG}.{SCHEMA}.bronze_file_inventory"
+
+SILVER_TAXI_TABLE = f"{CATALOG}.{SCHEMA}.silver_yellow_taxi"
+SILVER_REJECTED_TABLE = f"{CATALOG}.{SCHEMA}.silver_yellow_taxi_rejected"
+DQ_METRICS_TABLE = f"{CATALOG}.{SCHEMA}.dq_metrics"
+
+GOLD_AVG_AMOUNT_MONTH_TABLE = f"{CATALOG}.{SCHEMA}.gold_avg_total_amount_by_month"
+GOLD_AVG_PASSENGERS_HOUR_MAY_TABLE = f"{CATALOG}.{SCHEMA}.gold_avg_passenger_count_by_hour_may"
 
 
 def ensure_environment():
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {SCHEMA}")
-    dbutils.fs.mkdirs(LANDING_PATH)
+    if CATALOG == "hive_metastore":
+        raise ValueError(
+            "O catalogo atual e hive_metastore. Selecione um catalogo com Unity Catalog, "
+            "como workspace ou main, antes de executar o notebook."
+        )
+
+    spark.sql(f"CREATE SCHEMA IF NOT EXISTS {CATALOG}.{SCHEMA}")
+    spark.sql(f"CREATE VOLUME IF NOT EXISTS {CATALOG}.{SCHEMA}.{VOLUME}")
+    dbutils.fs.mkdirs(LANDING_SPARK_PATH)
+
 
 ensure_environment()
 
-print("Setup concluído com sucesso.")
+print("Setup concluido com sucesso.")
+print(f"Catalog: {CATALOG}")
 print(f"Schema: {SCHEMA}")
-print(f"Landing path: {LANDING_PATH}")
+print(f"Volume: {CATALOG}.{SCHEMA}.{VOLUME}")
+print(f"Landing local path: {LANDING_LOCAL_PATH}")
+print(f"Landing Spark path: {LANDING_SPARK_PATH}")
+print(f"Bronze table: {BRONZE_TAXI_TABLE}")
+print(f"Silver table: {SILVER_TAXI_TABLE}")
